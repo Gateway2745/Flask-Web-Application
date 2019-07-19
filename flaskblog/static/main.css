@@ -1,0 +1,60 @@
+html,body{
+background-image: url('back.jpg');
+background-size: cover;
+height: 100%;
+font-family: 'Numans', sans-serif;
+}
+.links a{
+	color:white !important;
+}
+.links a:hover{
+	color: gold !important;
+}
+.main_pg{
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+.members{
+	width: 65%;
+	display: flex;
+	justify-content: flex-start;
+	flex-wrap: wrap;
+}
+.add_mem{
+	display: flex;
+	margin-top: 25em;
+}
+@media screen and (max-width: 800px){
+	.main_pg{
+		flex-direction: column;
+		align-items: center;
+	}
+}
+.grid-item{
+	position: relative;
+}
+.overlay{
+	position: absolute;
+	width: 75%;
+	height: 75%;
+	margin: auto auto;
+	top: 0;left: 0; right: 0; bottom: 0;
+	opacity: 0;
+}
+.grid-item:hover .overlay{
+	opacity: 0.5
+}
+
+.individual{
+	margin: 5px 0 5px 15px;
+	border: 5px solid white;
+	border-radius: 40px;
+	height: 400px;
+	width: 300px;
+}
+@media screen and (max-width: 402px){
+	.individual{
+		height: 315px;
+	}
+}
