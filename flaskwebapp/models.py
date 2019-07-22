@@ -1,4 +1,4 @@
-from flaskblog import db, login_manager
+from flaskwebapp import db, login_manager
 from flask_login import UserMixin
 
 @login_manager.user_loader

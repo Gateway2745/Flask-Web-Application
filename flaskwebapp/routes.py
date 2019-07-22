@@ -1,7 +1,7 @@
 from flask import render_template, url_for ,flash,redirect, request , jsonify
-from flaskblog import app , db , bcrypt
-from flaskblog.forms import RegistrationForm,LoginForm, new_member
-from flaskblog.models import User, Post
+from flaskwebapp import app , db , bcrypt
+from flaskwebapp.forms import RegistrationForm,LoginForm, new_member
+from flaskwebapp.models import User, Post
 from flask_login import login_user,logout_user, current_user,login_required
 import json
 import sys
@@ -26,6 +26,7 @@ def login():
 			login_user(user , remember=form.remember.data)
 			next_page = request.args.get('next')
 			return redirect(next_page) if next_page else redirect(url_for('members'))
+		flash('Invalid Credentials!')
 	return render_template('login.html' , title = 'Login' , form =form)
 
 @app.route("/logout")
