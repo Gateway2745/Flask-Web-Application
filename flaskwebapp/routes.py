@@ -1,10 +1,12 @@
 from flask import render_template, url_for ,flash,redirect, request , jsonify
-from flaskwebapp import app , db , bcrypt
-from flaskwebapp.forms import RegistrationForm,LoginForm, new_member
+from flaskwebapp import app , db , bcrypt , mail
+from flaskwebapp.forms import RegistrationForm,LoginForm, new_member , RequestResetForm , ResetPasswordForm
 from flaskwebapp.models import User, Post
 from flask_login import login_user,logout_user, current_user,login_required
+from flask_mail import Message
 import json
 import sys
+import os
 
 @app.route("/" , methods = ['POST' , 'GET'])
 def register():
@@ -74,3 +76,40 @@ def delete_post(post_id):
 	db.session.commit()
 	return jsonify('' ,204)
 	# return redirect(url_for('members'))
+
+
+def send_reset_email(user):
+	token = user.get_reset_token()
+	msg = Message('Password Reset Request' , sender = os.environ.get('EMAIL_USER') , recipients = [user.email])
+	msg.body = f'''
+To reset your password , visit the following link:
+{url_for('reset_token' , token = token , _external = True)}
+'''
+	mail.send(msg)
+
+
+@app.route("/reset_password" , methods = ['GET' , 'POST'])
+def reset_request():
+	form = RequestResetForm()
+	if form.validate_on_submit():
+		user = User.query.filter_by(email = form.email.data).first()
+		send_reset_email(user)
+		flash('email has been sent','info')
+		return redirect(url_for('login'))
+	return render_template('reset_request.html' , form=form)
+
+
+@app.route("/reset_password/<token>" , methods = ['GET' , 'POST'])
+def reset_token(token):
+	user = User.verify_reset_token(token)
+	if not user:
+		flash('That is invalid or expired token' , 'warning')
+		return redirect(url_for('reset_request'))
+	form = ResetPasswordForm()
+	if form.validate_on_submit():
+		hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+		user.password = hashed_password
+		db.session.commit()
+		flash('Password Successfully Reset')
+		return redirect(url_for('login'))
+	return render_template('reset_token.html' , title='reset password'  ,form=form)
